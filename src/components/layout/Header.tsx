@@ -9,7 +9,7 @@ export default class Header extends React.Component<{}, {}> {
                 <img src={logo} className="App-logo" alt="logo" />
                 <h2>Contest Prize Manager</h2>
                 <div>       
-                    <Link className="App-link" to="/">Home</Link> | <Link className="App-link" to="/about">About</Link>
+                    <Link className="App-link" to="/">Home</Link> | <Link className="App-link" to="/board">Board</Link> | <Link className="App-link" to="/about">About</Link>
                 </div>
             </div>
         );
