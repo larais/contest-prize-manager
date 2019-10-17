@@ -1,7 +1,8 @@
 {
-  "name": "testing_react_with_ts",
+  "name": "contest-prize-manager",
   "version": "0.1.0",
   "private": true,
+  "main": "public/Main.js",
   "dependencies": {
     "@types/jest": "24.0.19",
     "@types/node": "12.11.1",
@@ -16,7 +17,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "electron-start": "electron ."
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -32,5 +34,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "electron": "^6.0.12"
   }
 }
