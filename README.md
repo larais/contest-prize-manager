@@ -1,8 +1,9 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+ contest-prize-manager [![Build Status](https://travis-ci.org/larais/contest-prize-manager.svg?branch=master)](https://travis-ci.org/larais/contest-prize-manager)
+==================
+
+
 
 ## Available Scripts
-
-In the project directory, you can run:
 
 ### `npm start`
 
