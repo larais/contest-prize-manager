@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
-import { IProject } from '../model/IProject';
+import { IProject } from '../data/Model';
 
 interface IData {
     project: IProject;

@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import Prize from './Prize';
-import { IPrize } from '../model/IPrize';
-import { IProject } from '../model/IProject';
+import { IPrize, IProject } from '../data/Model';
 import { prizeRepository } from '../data/PrizeRepository';
 
 interface IState {
@@ -27,9 +26,8 @@ class Board extends Component<{}, IState> {
 
     componentDidMount() {
         prizeRepository.getAll().then((prizes) => {
-            console.log(prizes);
-            let prizesKV: { [pid: string]: IPrize } = {};
 
+            let prizesKV: { [pid: string]: IPrize } = {};
             prizes.forEach((p) => {
                 prizesKV[p._id] = p;
             });

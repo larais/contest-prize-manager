@@ -1,5 +1,5 @@
 import PouchDb from 'pouchdb'
-import { IPrize } from '../model/IPrize';
+import { IPrize } from '../data/Model';
 
 export class PrizeRepository {
     private db: PouchDB.Database;
@@ -33,7 +33,7 @@ export class PrizeRepository {
         ] as IPrize[]).then(function (response) {
             console.log(response);
         }).catch(function (err) {
-        console.log(err);
+            console.log(err);
         });
     }
 }

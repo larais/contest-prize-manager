@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { Droppable } from 'react-beautiful-dnd';
 import Project from './Project';
-import { IProject } from '../model/IProject';
-import { IPrize } from '../model/IPrize';
+import { IPrize, IProject } from '../data/Model';
 
 interface IData {
     prize: IPrize;
