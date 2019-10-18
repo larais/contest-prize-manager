@@ -1,6 +1,7 @@
-export interface Project {
+export interface IProject {
     _id: string;
-    name: string;
+    _rev?: string;
+    title: string;
     description: string;
     participants: string[];
 }
