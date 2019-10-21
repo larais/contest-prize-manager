@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
+import { IProject } from '../data/Model';
 
 interface IData {
-    project:any;
+    project: IProject;
     index:any;
 }
 class Project extends Component<IData> {
     render() {
         return (
-            <Draggable draggableId={this.props.project.id} index={this.props.index}>
+            <Draggable draggableId={this.props.project._id} index={this.props.index}>
             {(provided) => (
                 <div
                 {...provided.draggableProps}
