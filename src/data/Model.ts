@@ -5,10 +5,11 @@ export interface IDocument {
 
 export interface IPrize extends IDocument{
     title: string;
-    participantCapacity: number;
+    capacity: number;
     minAge: number;
     maxAge: number;
     location: string;
+    projects: string[];
 }
 
 export interface IProject extends IDocument {

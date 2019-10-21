@@ -10,47 +10,41 @@ export class Repository<TDocument extends IDocument> {
     }
 
     async getAll(): Promise<TDocument[]> {
-        try {
-            let result = await this.db.allDocs({ include_docs: true});
-            let prizes: TDocument[] = [];
+        let result = await this.db.allDocs({ include_docs: true});
+        let prizes: TDocument[] = [];
 
-            result.rows.forEach(element => {
-                prizes.push(element.doc as TDocument);
-            });
+        result.rows.forEach(element => {
+            prizes.push(element.doc as TDocument);
+        });
 
-            return prizes;
-        } catch(e) {
-            console.log(e);
-            return [];
-        }
+        return prizes;
+    }
+
+    async get(_id: string): Promise<TDocument> {         
+        let result = await this.db.get<TDocument>(_id);
+        return result;
     }
 
     async add(prize: TDocument): Promise<void> {
-        try {
-            prize._id = uuid.v4();
-            let result = await this.db.put(prize)
-            prize._rev = result.rev;        
-        } catch (e) {
-            console.log(e);
-        }
+        prize._id = uuid.v4();
+        let result = await this.db.put(prize)
+        prize._rev = result.rev;   
     }
 
     async update(prize: TDocument): Promise<void> {
-        try {
-            let result = await this.db.put(prize)
-            prize._rev = result.rev;        
-        } catch (e) {
-            console.log(e);
-        }
+        let result = await this.db.put(prize)
+        prize._rev = result.rev;  
     }
 
     async remove(_id: string): Promise<void> {
-        try {
-            let doc = await this.db.get(_id);
-            await this.db.remove(doc);
-        } catch (e) {
-            console.log(e);
-        }
+        let doc = await this.db.get(_id);
+        await this.db.remove(doc);
+    }
+
+    async clear(): Promise<void> {
+        let name = this.db.name;
+        await this.db.destroy();
+        this.db = new PouchDb(name);
     }
 }
 

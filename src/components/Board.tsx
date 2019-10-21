@@ -32,12 +32,52 @@ class Board extends Component<{}, IState> {
                 prizesKV[p._id] = p;
             });
 
+            let prizeOrder: string[] = [];
+            prizes.forEach((p) => {
+                prizeOrder.push(p._id);
+            });
+
             this.setState({
                 prizes: prizesKV,
-                prizesOrder: [prizes[0]._id],
+                prizesOrder: prizeOrder,
                 projects: { "project-1": { _id: "project-1", title: "Project A", description: 'desc', participants: [] } }
             });
         });
+
+        let prize = {
+            _id: '',
+            title: "test",
+            capacity: 3,
+            location: "Helloo",
+            minAge: 2,
+            maxAge: 3,
+            projects: []
+        } as IPrize;
+
+        prizeRepository.add(prize)
+            .then(() => {
+                console.log(prize);
+
+                prize.title = "updated title";
+
+                prizeRepository.update(prize)
+                    .then(() => {
+                        console.log(prize);
+
+                        prizeRepository.remove(prize._id)
+                            .then(() => {
+                                prizeRepository.get(prize._id)
+                                    .then((p) => {
+                                        console.log(p);
+                                    })
+                                    .catch((e) => {
+                                        console.log('error, lele');
+                                    });
+                            });
+
+                    });
+                    
+            });
     }
 
     onDragStart() {
