@@ -202,6 +202,7 @@ function Paperbase(props: PaperbaseProps) {
             <main className={classes.main}>
               <Route exact path='/' component={Content} />
               <Route path='/about' component={About} />
+              <Route path='/board' component={Board} />
             </main>
             <footer className={classes.footer}>
               <Copyright />
