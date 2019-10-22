@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
-import Prize from './Prize';
-import { IPrize, IProject } from '../data/Model';
-import { prizeRepository } from '../data/Repository';
+import Prize from '../Prize';
+import { IPrize, IProject } from '../../data/Model';
+import { prizeRepository } from '../../data/Repository';
 
 interface IState {
     prizes: { [id: string]: IPrize };

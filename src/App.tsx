@@ -11,11 +11,12 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Hidden from '@material-ui/core/Hidden';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
-import Navigator from './components/Navigator';
-import Content from './components/Content';
-import Header from './components/Header';
-import Board from './components/Board';
-import About from './components/About';
+import Navigator from './components/layout/Navigator';
+import Content from './components/pages/Content';
+import Header from './components/layout/Header';
+import Board from './components/pages/Board';
+import About from './components/pages/About';
+import Participants from './components/pages/Participants';
 
 function Copyright() {
   return (
@@ -201,8 +202,9 @@ function Paperbase(props: PaperbaseProps) {
             <Header onDrawerToggle={handleDrawerToggle} />
             <main className={classes.main}>
               <Route exact path='/' component={Content} />
-              <Route path='/about' component={About} />
+              <Route path='/participants' component={Participants} />
               <Route path='/board' component={Board} />
+              <Route path='/about' component={About} />
             </main>
             <footer className={classes.footer}>
               <Copyright />
