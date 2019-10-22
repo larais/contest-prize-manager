@@ -47,5 +47,9 @@
   "devDependencies": {
     "codecov": "^3.6.1",
     "electron": "^6.0.12"
+  },
+  "jest": {
+    "coverageDirectory": "./coverage/",
+    "collectCoverage": true
   }
 }
