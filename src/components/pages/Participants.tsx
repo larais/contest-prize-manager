@@ -3,13 +3,16 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import Checkbox from '@material-ui/core/Checkbox';
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
-import { TableCell, TableRow, TableHead, Table, TableBody, Grid, Button, Tooltip, IconButton } from '@material-ui/core';
-import { participantRepository } from '../../data/Repository';
+import { TableCell, TableRow, TableHead, Table, TableBody, Grid, Button, Tooltip, IconButton, Hidden, Icon } from '@material-ui/core';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import PeopleIcon from '@material-ui/icons/People';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+import NotInterestedIcon from '@material-ui/icons/NotInterested';
+import CheckIcon from '@material-ui/icons/Check';
 import { IParticipant } from '../../data/Model';
+import { participantRepository } from '../../data/Repository';
 
 
 const styles = (theme: Theme) =>
@@ -31,6 +34,9 @@ const styles = (theme: Theme) =>
     contentWrapper: {
       margin: '40px 16px',
     },
+    button: {
+      margin: theme.spacing(1),
+    },
   });
 
 interface IParticipantProps extends WithStyles<typeof styles> {}
@@ -47,12 +53,25 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
       participants: [],
     }
   }
+  
   componentDidMount() {
     participantRepository.getAll().then((result) => {
       this.setState({
         participants: result,
       });
     });
+  }
+
+  editActionClick(rowId: string, e: React.MouseEvent<HTMLElement>) {
+    e.preventDefault();
+    console.log("Edit event triggered for ID %s", rowId);
+    console.log(e);
+  }
+
+  deleteActionClick(rowId: string, e: React.MouseEvent<HTMLElement>) {
+    e.preventDefault();
+    console.log("Delete event triggered for ID %s", rowId);
+    console.log(e);
   }
 
   render() {    
@@ -85,25 +104,41 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
                 <Table aria-label="simple table">
                   <TableHead>
                     <TableRow>
-                      <TableCell>GUID</TableCell>
-                      <TableCell align="right">First Name</TableCell>
-                      <TableCell align="right">Last Name</TableCell>
-                      <TableCell align="right">Birthdate</TableCell>
-                      <TableCell align="right">Passport?</TableCell>
-                      <TableCell align="right">X</TableCell>
+                      <Hidden mdUp>
+                        <TableCell>GUID</TableCell>
+                      </Hidden>
+                      <TableCell>First Name</TableCell>
+                      <TableCell>Last Name</TableCell>
+                      <TableCell>Birthdate</TableCell>
+                      <TableCell align="center">Passport?</TableCell>
+                      <TableCell align="center">Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {this.state.participants.map((row:IParticipant) => (  
                       <TableRow key={row._id}>
-                        <TableCell component="th" scope="row">
-                          {row._id}
+                        <Hidden mdUp>
+                          <TableCell component="th" scope="row">
+                            {row._id}
+                          </TableCell>
+                        </Hidden>
+                        <TableCell>{row.firstName}</TableCell>
+                        <TableCell>{row.lastName}</TableCell>
+                        <TableCell>{new Date(row.birthdate).toLocaleDateString("lu-LU")}</TableCell>
+                        <TableCell align="center">
+                          {
+                            (row.hasPassport)?<Icon><CheckIcon /></Icon>:<Icon><NotInterestedIcon /></Icon>
+                          }
+                          
                         </TableCell>
-                        <TableCell align="right">{row.firstName}</TableCell>
-                        <TableCell align="right">{row.lastName}</TableCell>
-                        <TableCell align="right">{row.birthdate}</TableCell>
-                        <TableCell align="right"><Checkbox checked={row.hasPassport} disabled value="passport" color="primary"/></TableCell>
-                        <TableCell align="right">X</TableCell>
+                        <TableCell align="center">
+                          <IconButton onClick={(e) => this.editActionClick(row._id, e)} className={this.props.classes.button} aria-label="edit" title="Edit">
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton onClick={(e) => this.deleteActionClick(row._id, e)} className={this.props.classes.button} aria-label="delete" title="Delete">
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
