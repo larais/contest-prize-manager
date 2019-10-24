@@ -52,7 +52,7 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
     this.state = {
       participants: [],
     }
-  }
+  } 
   
   componentDidMount() {
     participantRepository.getAll().then((result) => {
@@ -72,6 +72,12 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
     e.preventDefault();
     console.log("Delete event triggered for ID %s", rowId);
     console.log(e);
+    participantRepository.remove(rowId).then(() => {
+      console.log("Deletion was a success!");
+      this.setState({
+        participants: this.state.participants.filter( p => p._id !== rowId)
+      });
+    }) //TODO: Should probably handle exceptions :)
   }
 
   render() {    
