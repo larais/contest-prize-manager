@@ -51,11 +51,13 @@ interface IParticipantProps extends WithStyles<typeof styles> {}
 
 interface IParticipantState {
   participants: IParticipant[];
-  addParticipantOpen: boolean;
-  addParticipantFirstName: string;
-  addParticipantLastName: string;
-  addParticipantBirthdate: Date;
-  addParticipantHasPassport: boolean;
+  dialogOpen: boolean;
+  dialogFirstName: string;
+  dialogLastName: string;
+  dialogBirthdate: Date;
+  dialogHasPassport: boolean;
+  dialogIsEdit: boolean;
+  dialogEditId?: string;
 }
 
 class Participants extends Component<IParticipantProps, IParticipantState> {
@@ -64,16 +66,18 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
     
     this.state = {
       participants: [],
-      addParticipantOpen: false,
-      addParticipantBirthdate: new Date(),
-      addParticipantFirstName: "",
-      addParticipantHasPassport: false,
-      addParticipantLastName: ""
+      dialogOpen: false,
+      dialogBirthdate: new Date(),
+      dialogFirstName: "",
+      dialogHasPassport: false,
+      dialogLastName: "",
+      dialogIsEdit: false
     }
   } 
   
   componentDidMount() {
     participantRepository.getAll().then((result) => {
+      console.log(result);
       this.setState({
         participants: result
       });
@@ -82,40 +86,70 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
 
   addActionClick = () => {
     this.setState({
-      addParticipantOpen: true,
-      addParticipantBirthdate: new Date(),
-      addParticipantFirstName: "",
-      addParticipantHasPassport: false,
-      addParticipantLastName: ""
+      dialogOpen: true,
+      dialogBirthdate: new Date(),
+      dialogFirstName: "",
+      dialogHasPassport: false,
+      dialogLastName: "",
+      dialogIsEdit: false
     });
   }
 
   handleClose = () => {
-    this.setState({ addParticipantOpen: false })
+    this.setState({ dialogOpen: false })
   }
 
   handleSave = () => {
-    let participant: IParticipant = {
-      _id: '',
-      firstName: this.state.addParticipantFirstName,
-      lastName: this.state.addParticipantLastName,
-      birthdate: this.state.addParticipantBirthdate,
-      hasPassport: this.state.addParticipantHasPassport
+    if (this.state.dialogIsEdit && this.state.dialogEditId) {
+      participantRepository.get(this.state.dialogEditId)
+        .then((p) => {
+          p.birthdate = this.state.dialogBirthdate.toISOString();
+          p.firstName = this.state.dialogFirstName;
+          p.lastName = this.state.dialogLastName;
+          p.hasPassport = this.state.dialogHasPassport;
+
+          participantRepository.update(p)
+            .then(() => {
+              this.setState({ dialogOpen: false, participants:this.state.participants.map((item, i) => { return (item._id === p._id) ? p : item; }) })
+            })
+        })
+    } else {
+      let participant: IParticipant = {
+        _id: '',
+        firstName: this.state.dialogFirstName,
+        lastName: this.state.dialogLastName,
+        birthdate: this.state.dialogBirthdate.toISOString(),
+        hasPassport: this.state.dialogHasPassport
+      }
+
+      participantRepository.add(participant)
+        .then(() => {
+          this.setState({ dialogOpen: false, participants: this.state.participants.concat(participant) })
+        });
+    }
+  }
+
+  editActionClick = (rowId: string, e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+
+    let participant: IParticipant | undefined = this.state.participants.find((value) => { return value._id === rowId });
+
+    if (!participant) {
+      return;
     }
 
-    participantRepository.add(participant)
-      .then(() => {
-        this.setState({ addParticipantOpen: false, participants: this.state.participants.concat(participant) })
-      });
+    this.setState({
+      dialogOpen: true,
+      dialogBirthdate: new Date(participant.birthdate),
+      dialogFirstName: participant.firstName,
+      dialogHasPassport: participant.hasPassport,
+      dialogLastName: participant.lastName,
+      dialogIsEdit: true,
+      dialogEditId: rowId
+    });
   }
 
-  editActionClick(rowId: string, e: React.MouseEvent<HTMLElement>) {
-    e.preventDefault();
-    console.log("Edit event triggered for ID %s", rowId);
-    console.log(e);
-  }
-
-  deleteActionClick(rowId: string, e: React.MouseEvent<HTMLElement>) {
+  deleteActionClick = (rowId: string, e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     console.log("Delete event triggered for ID %s", rowId);
     console.log(e);
@@ -197,24 +231,24 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
                   </TableBody>
                 </Table>
               </div>
-              <Dialog open={this.state.addParticipantOpen} onClose={this.handleClose} fullWidth={true} maxWidth={"xs"}>
-                <DialogTitle id="form-dialog-title">Add Participant</DialogTitle>
+              <Dialog open={this.state.dialogOpen} onClose={this.handleClose} fullWidth={true} maxWidth={"xs"}>
+                <DialogTitle id="form-dialog-title">{ this.state.dialogIsEdit ? "Edit Participant" : "Add Participant"}</DialogTitle>
                 <DialogContent>
                   <FormGroup>
                     <FormControl>
                       <InputLabel htmlFor="firstname">First Name</InputLabel>
-                      <Input id="firstname" autoFocus onChange={(e) => this.setState({ addParticipantFirstName: e.target.value })} />
+                      <Input id="firstname" autoFocus defaultValue={this.state.dialogFirstName} onChange={(e) => this.setState({ dialogFirstName: e.target.value })} />
                     </FormControl>
                     <FormControl>
                       <InputLabel htmlFor="lastname">Last Name</InputLabel>
-                      <Input id="lastname" onChange={(e) => this.setState({ addParticipantLastName: e.target.value })}/>
+                      <Input id="lastname" defaultValue={this.state.dialogLastName} onChange={(e) => this.setState({ dialogLastName: e.target.value })}/>
                     </FormControl>
                     <FormControl>
                       <InputLabel htmlFor="birthdate" shrink>Birthday</InputLabel>
-                      <Input id="birthdate" type="date" defaultValue={this.state.addParticipantBirthdate.toISOString().substr(0,10)} onChange={(e) => this.setState({ addParticipantBirthdate: new Date(e.target.value) })}/>
+                      <Input id="birthdate" type="date" defaultValue={this.state.dialogBirthdate.toISOString().substr(0,10)} onChange={(e) => this.setState({ dialogBirthdate: new Date(e.target.value) })}/>
                     </FormControl>
                   <FormControlLabel
-                      control={<Checkbox value="jason" onChange={(e) => this.setState({ addParticipantHasPassport: e.target.checked })} />}
+                      control={<Checkbox value="jason" defaultChecked={this.state.dialogHasPassport} onChange={(e) => this.setState({ dialogHasPassport: e.target.checked })} />}
                       label="Passport available"
                     />
                   </FormGroup>

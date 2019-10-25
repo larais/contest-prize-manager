@@ -21,6 +21,6 @@ export interface IProject extends IDocument {
 export interface IParticipant extends IDocument {
     firstName: string;
     lastName: string;
-    birthdate: Date;
+    birthdate: string;
     hasPassport: boolean;
 }
