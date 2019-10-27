@@ -76,19 +76,6 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
     });
   }
 
-  handleParticipantAdded = (participant: IParticipant) => {
-    this.setState({ 
-      dialogOpen: false,
-      participants: this.state.participants.concat(participant)
-    })
-  }
-
-  handleParticipantUpdated = (participant: IParticipant) => {
-    this.setState({ 
-      dialogOpen: false,
-      participants:this.state.participants.map((item, i) => { return (item._id === participant._id) ? participant : item; }) })
-  }
-
   editActionClick = (rowId: string, e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
 
@@ -115,6 +102,25 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
         participants: this.state.participants.filter( p => p._id !== rowId)
       });
     }) //TODO: Should probably handle exceptions :)
+  }
+
+  handleParticipantAdded = (participant: IParticipant) => {
+    this.setState({ 
+      dialogOpen: false,
+      participants: this.state.participants.concat(participant)
+    })
+  }
+
+  handleParticipantUpdated = (participant: IParticipant) => {
+    this.setState({ 
+      dialogOpen: false,
+      participants:this.state.participants.map((item, i) => { return (item._id === participant._id) ? participant : item; }) })
+  }
+
+  handleDialogClosed = () => {
+    this.setState({ 
+      dialogOpen: false
+    })
   }
 
   render() {    
@@ -187,7 +193,7 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
                   </TableBody>
                 </Table>
               </div>
-              <ParticipantDialog open={this.state.dialogOpen} editMode={this.state.dialogIsEdit} editParticipant={this.state.dialogEditId} onAdded={this.handleParticipantAdded} onUpdated={this.handleParticipantUpdated} />
+              <ParticipantDialog open={this.state.dialogOpen} editMode={this.state.dialogIsEdit} editParticipant={this.state.dialogEditId} onAdded={this.handleParticipantAdded} onUpdated={this.handleParticipantUpdated} onClosed={this.handleDialogClosed} />
               </Paper>
     )
   };

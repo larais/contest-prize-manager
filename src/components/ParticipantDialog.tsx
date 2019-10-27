@@ -18,6 +18,7 @@ interface IParticipantDialogProps {
     open: boolean;
     onAdded(participant: IParticipant): void;
     onUpdated(participant: IParticipant): void;
+    onClosed(): void;
 }
 
 interface IParticipantDialogState {
@@ -26,6 +27,7 @@ interface IParticipantDialogState {
     dialogLastName: string;
     dialogBirthdate: Date;
     dialogHasPassport: boolean;
+    loading: boolean;
 }
 
 class ParticipantDialog extends Component<IParticipantDialogProps, IParticipantDialogState> {
@@ -37,13 +39,15 @@ class ParticipantDialog extends Component<IParticipantDialogProps, IParticipantD
           dialogBirthdate: new Date(),
           dialogFirstName: "",
           dialogHasPassport: false,
-          dialogLastName: ""
+          dialogLastName: "",
+          loading: false
         }
       } 
     componentDidUpdate = (prevProps : IParticipantDialogProps) => {
         if (prevProps.open !== this.props.open && this.props.open) {
 
             if (this.props.editMode && this.props.editParticipant) {
+              try {
               participantRepository.get(this.props.editParticipant)
                 .then((participant) => {
                   this.setState({
@@ -54,6 +58,9 @@ class ParticipantDialog extends Component<IParticipantDialogProps, IParticipantD
                     dialogLastName: participant.lastName
                   });
                 });
+              } catch (e) {
+                console.log(e);
+              }
             } else if (!this.props.editMode) {
                 this.setState({
                     dialogOpen: true,
@@ -68,9 +75,12 @@ class ParticipantDialog extends Component<IParticipantDialogProps, IParticipantD
 
     handleClose = () => {
         this.setState({ dialogOpen: false })
+        this.props.onClosed();
       }
     
     handleSave = () => {
+      this.setState({ loading: true });
+      try {
         if (this.props.editMode && this.props.editParticipant) {
             participantRepository.get(this.props.editParticipant)
             .then((p) => {
@@ -81,7 +91,7 @@ class ParticipantDialog extends Component<IParticipantDialogProps, IParticipantD
 
                 participantRepository.update(p)
                 .then(() => {
-                    this.setState({ dialogOpen: false });
+                    this.setState({ dialogOpen: false, loading: false });
                     this.props.onUpdated(p);
                 })
             })
@@ -96,10 +106,14 @@ class ParticipantDialog extends Component<IParticipantDialogProps, IParticipantD
 
             participantRepository.add(participant)
             .then(() => {
-                this.setState({ dialogOpen: false })
+                this.setState({ dialogOpen: false, loading: false })
                 this.props.onAdded(participant);
             });
         }
+      } catch (e) {
+        this.setState({ loading: false });
+        console.log(e);
+      }
     }
 
     render() {
@@ -127,10 +141,10 @@ class ParticipantDialog extends Component<IParticipantDialogProps, IParticipantD
                   </FormGroup>
                 </DialogContent>
                 <DialogActions>
-                  <Button onClick={this.handleClose} color="primary">
+                  <Button onClick={this.handleClose} color="primary" disabled={this.state.loading}>
                     Cancel
                   </Button>
-                  <Button onClick={this.handleSave} color="primary">
+                  <Button onClick={this.handleSave} color="primary" disabled={this.state.loading}>
                     Save
                   </Button>
                 </DialogActions>
