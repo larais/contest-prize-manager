@@ -62,7 +62,6 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
   
   componentDidMount() {
     participantRepository.getAll().then((result) => {
-      console.log(result);
       this.setState({
         participants: result
       });
@@ -94,14 +93,15 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
 
   deleteActionClick = (rowId: string, e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
-    console.log("Delete event triggered for ID %s", rowId);
-    console.log(e);
-    participantRepository.remove(rowId).then(() => {
-      console.log("Deletion was a success!");
-      this.setState({
-        participants: this.state.participants.filter( p => p._id !== rowId)
-      });
-    }) //TODO: Should probably handle exceptions :)
+    try {
+      participantRepository.remove(rowId).then(() => {
+        this.setState({
+          participants: this.state.participants.filter( p => p._id !== rowId)
+        });
+      }); 
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   handleParticipantAdded = (participant: IParticipant) => {

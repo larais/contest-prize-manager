@@ -28,6 +28,8 @@ interface IParticipantDialogState {
     dialogBirthdate: Date;
     dialogHasPassport: boolean;
     loading: boolean;
+    firstNameError: boolean;
+    lastNameError: boolean;
 }
 
 class ParticipantDialog extends Component<IParticipantDialogProps, IParticipantDialogState> {
@@ -40,7 +42,9 @@ class ParticipantDialog extends Component<IParticipantDialogProps, IParticipantD
           dialogFirstName: "",
           dialogHasPassport: false,
           dialogLastName: "",
-          loading: false
+          loading: false,
+          firstNameError: false,
+          lastNameError: false
         }
       } 
     componentDidUpdate = (prevProps : IParticipantDialogProps) => {
@@ -55,7 +59,9 @@ class ParticipantDialog extends Component<IParticipantDialogProps, IParticipantD
                     dialogBirthdate: new Date(participant.birthdate),
                     dialogFirstName: participant.firstName,
                     dialogHasPassport: participant.hasPassport,
-                    dialogLastName: participant.lastName
+                    dialogLastName: participant.lastName,
+                    firstNameError: false,
+                    lastNameError: false
                   });
                 });
               } catch (e) {
@@ -67,7 +73,9 @@ class ParticipantDialog extends Component<IParticipantDialogProps, IParticipantD
                     dialogBirthdate: new Date(),
                     dialogFirstName: "",
                     dialogHasPassport: false,
-                    dialogLastName: ""
+                    dialogLastName: "",
+                    firstNameError: false,
+                    lastNameError: false
                   });
             }
         }
@@ -80,6 +88,12 @@ class ParticipantDialog extends Component<IParticipantDialogProps, IParticipantD
     
     handleSave = () => {
       this.setState({ loading: true });
+
+      if (this.checkInputInvalid()) {
+        this.setState({ loading: false });
+        return;
+      }
+
       try {
         if (this.props.editMode && this.props.editParticipant) {
             participantRepository.get(this.props.editParticipant)
@@ -116,6 +130,14 @@ class ParticipantDialog extends Component<IParticipantDialogProps, IParticipantD
       }
     }
 
+    checkInputInvalid(): boolean {
+      let feError = this.state.dialogFirstName === "";
+      let leError = this.state.dialogLastName === "";
+      this.setState({ firstNameError: feError });
+      this.setState({ lastNameError: leError });
+      return feError || leError;
+    }
+
     render() {
         return (
             <Dialog open={this.state.dialogOpen} onClose={this.handleClose} fullWidth={true} maxWidth={"xs"}>
@@ -124,11 +146,11 @@ class ParticipantDialog extends Component<IParticipantDialogProps, IParticipantD
                   <FormGroup>
                     <FormControl>
                       <InputLabel htmlFor="firstname">First Name</InputLabel>
-                      <Input id="firstname" autoFocus defaultValue={this.state.dialogFirstName} onChange={(e) => this.setState({ dialogFirstName: e.target.value })} />
+                      <Input id="firstname" autoFocus defaultValue={this.state.dialogFirstName} onChange={(e) => this.setState({ dialogFirstName: e.target.value })} error={this.state.firstNameError} />
                     </FormControl>
                     <FormControl>
                       <InputLabel htmlFor="lastname">Last Name</InputLabel>
-                      <Input id="lastname" defaultValue={this.state.dialogLastName} onChange={(e) => this.setState({ dialogLastName: e.target.value })}/>
+                      <Input id="lastname" defaultValue={this.state.dialogLastName} onChange={(e) => this.setState({ dialogLastName: e.target.value })} error={this.state.lastNameError}/>
                     </FormControl>
                     <FormControl>
                       <InputLabel htmlFor="birthdate" shrink>Birthday</InputLabel>
