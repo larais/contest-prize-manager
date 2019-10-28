@@ -14,6 +14,7 @@ import CheckIcon from '@material-ui/icons/Check';
 import { IParticipant } from '../../data/Model';
 import { participantRepository } from '../../data/Repository';
 import ParticipantDialog from '../ParticipantDialog';
+import ErrorDialog from '../ErrorDialog';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -46,7 +47,8 @@ interface IParticipantState {
   participants: IParticipant[];
   dialogOpen: boolean;
   dialogIsEdit: boolean;
-  dialogEditId?: string;
+  dialogEditParticipant?: IParticipant;
+  errorState: boolean;
 }
 
 class Participants extends Component<IParticipantProps, IParticipantState> {
@@ -56,10 +58,11 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
     this.state = {
       participants: [],
       dialogOpen: false,
-      dialogIsEdit: false
+      dialogIsEdit: false,
+      errorState: false
     }
-  } 
-  
+  }
+
   componentDidMount() {
     participantRepository.getAll().then((result) => {
       this.setState({
@@ -87,7 +90,7 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
     this.setState({
       dialogOpen: true,
       dialogIsEdit: true,
-      dialogEditId: rowId
+      dialogEditParticipant: participant
     });
   }
 
@@ -96,105 +99,136 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
     try {
       participantRepository.remove(rowId).then(() => {
         this.setState({
-          participants: this.state.participants.filter( p => p._id !== rowId)
+          participants: this.state.participants.filter(p => p._id !== rowId)
         });
-      }); 
+      });
     } catch (e) {
-      console.log(e);
+      this.setState({ errorState: true });
     }
   }
 
   handleParticipantAdded = (participant: IParticipant) => {
-    this.setState({ 
+    try {
+      participantRepository.add(participant)
+        .then(() => {
+          this.setState({ dialogOpen: false });
+        });
+    } catch (e) {
+      this.setState({ dialogOpen: false, errorState: true });
+    }
+    this.setState({
       dialogOpen: false,
       participants: this.state.participants.concat(participant)
     })
   }
 
   handleParticipantUpdated = (participant: IParticipant) => {
-    this.setState({ 
-      dialogOpen: false,
-      participants:this.state.participants.map((item, i) => { return (item._id === participant._id) ? participant : item; }) })
-  }
 
-  handleDialogClosed = () => {
-    this.setState({ 
-      dialogOpen: false
+    try {
+      participantRepository.get(participant._id)
+        .then((p) => {
+          p.birthdate = participant.birthdate;
+          p.firstName = participant.firstName;
+          p.lastName = participant.lastName;
+          p.hasPassport = participant.hasPassport;
+
+          participantRepository.update(p)
+            .then(() => {
+              this.setState({ dialogOpen: false });
+            })
+        })
+    } catch (e) {
+      this.setState({ dialogOpen: false, errorState: true });
+    }
+
+
+    this.setState({
+      dialogOpen: false,
+      participants: this.state.participants.map((item, i) => { return (item._id === participant._id) ? participant : item; })
     })
   }
 
-  render() {    
+  handleDialogClosed = () => {
+    this.setState({ dialogOpen: false });
+  }
+
+  handleDialogError = (e: Error) => {
+    this.setState({ dialogOpen: false, errorState: true });
+  }
+
+  render() {
     return (<Paper className={this.props.classes.paper}>
-              <AppBar className={this.props.classes.titleBar} position="static" color="default" elevation={0}>
-                <Toolbar>
-                <Grid container spacing={2} alignItems="center">
-                    <Grid item>
-                      <PeopleIcon className={this.props.classes.block} color="inherit" />
-                    </Grid>
-                    <Grid item xs>
-                    <Typography variant="h6">  
-                    Participants
+      <AppBar className={this.props.classes.titleBar} position="static" color="default" elevation={0}>
+        <Toolbar>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item>
+              <PeopleIcon className={this.props.classes.block} color="inherit" />
+            </Grid>
+            <Grid item xs>
+              <Typography variant="h6">
+                Participants
                     </Typography>
-                    </Grid>
-                    <Grid item>
-                      <Button variant="contained" color="primary" className={this.props.classes.addUser} onClick={this.addActionClick}>
-                        Add participant
+            </Grid>
+            <Grid item>
+              <Button variant="contained" color="primary" className={this.props.classes.addUser} onClick={this.addActionClick}>
+                Add participant
                       </Button>
-                      <Tooltip title="Reload">
-                        <IconButton>
-                          <RefreshIcon className={this.props.classes.block} color="inherit" />
-                        </IconButton>
-                      </Tooltip>
-                    </Grid>
-                  </Grid>
-                </Toolbar>
-              </AppBar>
-              <div>
-                <Table aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      <Hidden mdUp>
-                        <TableCell>GUID</TableCell>
-                      </Hidden>
-                      <TableCell>First Name</TableCell>
-                      <TableCell>Last Name</TableCell>
-                      <TableCell>Birthdate</TableCell>
-                      <TableCell align="center">Passport?</TableCell>
-                      <TableCell align="center">Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {this.state.participants.map((row:IParticipant) => (  
-                      <TableRow key={row._id}>
-                        <Hidden mdUp>
-                          <TableCell component="th" scope="row">
-                            {row._id}
-                          </TableCell>
-                        </Hidden>
-                        <TableCell>{row.firstName}</TableCell>
-                        <TableCell>{row.lastName}</TableCell>
-                        <TableCell>{new Date(row.birthdate).toLocaleDateString("lu-LU")}</TableCell>
-                        <TableCell align="center">
-                          {
-                            (row.hasPassport)?<Icon><CheckIcon /></Icon>:<Icon><NotInterestedIcon /></Icon>
-                          }
-                          
-                        </TableCell>
-                        <TableCell align="center">
-                          <IconButton onClick={(e) => this.editActionClick(row._id, e)} className={this.props.classes.button} aria-label="edit" title="Edit">
-                            <EditIcon />
-                          </IconButton>
-                          <IconButton onClick={(e) => this.deleteActionClick(row._id, e)} className={this.props.classes.button} aria-label="delete" title="Delete">
-                            <DeleteIcon />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-              <ParticipantDialog open={this.state.dialogOpen} editMode={this.state.dialogIsEdit} editParticipant={this.state.dialogEditId} onAdded={this.handleParticipantAdded} onUpdated={this.handleParticipantUpdated} onClosed={this.handleDialogClosed} />
-              </Paper>
+              <Tooltip title="Reload">
+                <IconButton>
+                  <RefreshIcon className={this.props.classes.block} color="inherit" />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          </Grid>
+        </Toolbar>
+      </AppBar>
+      <div>
+        <Table aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <Hidden mdUp>
+                <TableCell>GUID</TableCell>
+              </Hidden>
+              <TableCell>First Name</TableCell>
+              <TableCell>Last Name</TableCell>
+              <TableCell>Birthdate</TableCell>
+              <TableCell align="center">Passport?</TableCell>
+              <TableCell align="center">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {this.state.participants.map((row: IParticipant) => (
+              <TableRow key={row._id}>
+                <Hidden mdUp>
+                  <TableCell component="th" scope="row">
+                    {row._id}
+                  </TableCell>
+                </Hidden>
+                <TableCell>{row.firstName}</TableCell>
+                <TableCell>{row.lastName}</TableCell>
+                <TableCell>{new Date(row.birthdate).toLocaleDateString("lu-LU")}</TableCell>
+                <TableCell align="center">
+                  {
+                    (row.hasPassport) ? <Icon><CheckIcon /></Icon> : <Icon><NotInterestedIcon /></Icon>
+                  }
+
+                </TableCell>
+                <TableCell align="center">
+                  <IconButton onClick={(e) => this.editActionClick(row._id, e)} className={this.props.classes.button} aria-label="edit" title="Edit">
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton onClick={(e) => this.deleteActionClick(row._id, e)} className={this.props.classes.button} aria-label="delete" title="Delete">
+                    <DeleteIcon />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      <ParticipantDialog open={this.state.dialogOpen} editMode={this.state.dialogIsEdit} editParticipant={this.state.dialogEditParticipant} onAdded={this.handleParticipantAdded} onUpdated={this.handleParticipantUpdated} onClosed={this.handleDialogClosed} />
+      <ErrorDialog open={this.state.errorState} text={"You need to reaload the page."} />
+    </Paper>
     )
   };
 }
