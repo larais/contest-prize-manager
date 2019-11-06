@@ -29,7 +29,7 @@ const styles = (theme: Theme) =>
     block: {
       display: 'block',
     },
-    addUser: {
+    addPrize: {
       marginRight: theme.spacing(1),
     },
     contentWrapper: {
@@ -173,12 +173,12 @@ class Prizes extends Component<IPrizeProps, IPrizeState> {
             </Grid>
             <Grid item xs>
               <Typography variant="h6">
-                Participants
+                Prizes
                     </Typography>
             </Grid>
             <Grid item>
-              <Button variant="contained" color="primary" className={this.props.classes.addUser} onClick={this.addActionClick}>
-                Add participant
+              <Button variant="contained" color="primary" className={this.props.classes.addPrize} onClick={this.addActionClick}>
+                Add prize
                       </Button>
               <Tooltip title="Reload">
                 <IconButton>
@@ -230,7 +230,7 @@ class Prizes extends Component<IPrizeProps, IPrizeState> {
           </TableBody>
         </Table>
       </div>
-      
+
       <ErrorDialog open={this.state.errorState} text={"You need to reload the page."} />
     </Paper>
     )
