@@ -10,11 +10,9 @@ import PeopleIcon from '@material-ui/icons/People';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { IPrize } from '../../data/Model';
-import { prizeRepository, projectRepository } from '../../data/Repository';
+import { prizeRepository } from '../../data/Repository';
 import PrizeDialog from '../ErrorDialog';
 import ErrorDialog from '../ErrorDialog';
-
-
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -55,8 +53,7 @@ interface IPrizeState {
 class Prizes extends Component<IPrizeProps, IPrizeState> {
   constructor(props: IPrizeProps) {
     super(props);
-    console.log("FOO"+this.state.prizes);
-
+    
     this.state = {
       prizes: [],
       dialogOpen: false,
@@ -75,7 +72,6 @@ class Prizes extends Component<IPrizeProps, IPrizeState> {
     } catch (e) {
       this.setState({ errorState: true });
     }
-    
   }
 
   addActionClick = () => {
@@ -205,7 +201,7 @@ class Prizes extends Component<IPrizeProps, IPrizeState> {
             </TableRow>
           </TableHead>
           <TableBody>
-            {this.state.prizes.map((row: IPrize) => (
+          {this.state.prizes.map((row: IPrize) => (
               <TableRow key={row._id}>
                 <Hidden mdUp>
                   <TableCell component="th" scope="row">
@@ -235,7 +231,6 @@ class Prizes extends Component<IPrizeProps, IPrizeState> {
     </Paper>
     )
   };
-
 }
 
 export default withStyles(styles)(Prizes);

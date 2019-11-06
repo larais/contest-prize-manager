@@ -18,6 +18,7 @@ import Board from './components/pages/Board';
 import About from './components/pages/About';
 import Participants from './components/pages/Participants';
 import Projects from './components/pages/Projects';
+import Prizes from './components/pages/Prizes';
 
 function Copyright() {
   return (
@@ -205,6 +206,7 @@ function Paperbase(props: PaperbaseProps) {
               <Route exact path='/' component={Content} />
               <Route path='/participants' component={Participants} />
               <Route path='/projects' component={Projects} />
+              <Route path='/prizes' component={Prizes} />
               <Route path='/board' component={Board} />
               <Route path='/about' component={About} />
             </main>
