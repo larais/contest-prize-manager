@@ -12,7 +12,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import NotInterestedIcon from '@material-ui/icons/NotInterested';
 import CheckIcon from '@material-ui/icons/Check';
 import { IParticipant } from '../../data/Model';
-import { participantRepository } from '../../data/Repository';
+import { participantRepository, projectRepository } from '../../data/Repository';
 import ParticipantDialog from '../ParticipantDialog';
 import ErrorDialog from '../ErrorDialog';
 
@@ -64,11 +64,15 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
   }
 
   componentDidMount() {
-    participantRepository.getAll().then((result) => {
-      this.setState({
-        participants: result
+    try {
+      participantRepository.getAll().then((result) => {
+        this.setState({
+          participants: result
+        });
       });
-    });
+    } catch (e) {
+      this.setState({ errorState: true });
+    }
   }
 
   addActionClick = () => {
@@ -101,6 +105,16 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
         this.setState({
           participants: this.state.participants.filter(p => p._id !== rowId)
         });
+
+        projectRepository.getAll().then((projects) => {
+          projects.forEach(async (project) => {
+            if (project.participants.includes(rowId)) {
+              project.participants = project.participants.filter(p => p !== rowId);
+              await projectRepository.update(project);
+            }
+          })
+        });
+
       });
     } catch (e) {
       this.setState({ errorState: true });
