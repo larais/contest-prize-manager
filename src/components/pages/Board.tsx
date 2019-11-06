@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
-import Prize from '../Prize';
+import PrizeBoardElement from '../board_elements/PrizeBoardElement';
 import { IPrize, IProject } from '../../data/Model';
 import { prizeRepository } from '../../data/Repository';
+import { Paper, Grid, Typography, AppBar, Toolbar } from '@material-ui/core';
+import CompareArrowIcon from '@material-ui/icons/CompareArrowsOutlined';
 
 
 const styles = (theme: Theme) =>
@@ -18,9 +20,6 @@ const styles = (theme: Theme) =>
     },
     block: {
       display: 'block',
-    },
-    addUser: {
-      marginRight: theme.spacing(1),
     },
     contentWrapper: {
       margin: '40px 16px',
@@ -98,7 +97,24 @@ class Board extends Component<IBoardProps, IBoardState> {
 
     render() {
         console.log("HELLO, render");
-        return <DragDropContext
+        return (
+        <Paper className={this.props.classes.paper}>
+            <AppBar className={this.props.classes.titleBar} position="static" color="default" elevation={0}>
+                <Toolbar>
+                <Grid container spacing={2} alignItems="center">
+                    <Grid item>
+                    <CompareArrowIcon className={this.props.classes.block} color="inherit" />
+                    </Grid>
+                    <Grid item xs>
+                    <Typography variant="h6">
+                        Board
+                    </Typography>
+                    </Grid>
+                </Grid>
+                </Toolbar>
+            </AppBar>
+
+        <DragDropContext
             onDragStart={this.onDragStart}
             onDragUpdate={this.onDragUpdate}
             onDragEnd={this.onDragEnd}>
@@ -113,10 +129,12 @@ class Board extends Component<IBoardProps, IBoardState> {
                         participants: []
                     }];
 
-                return <Prize key={prize._id} prize={prize} projects={projects} />;
+                return <PrizeBoardElement key={prize._id} prize={prize} projects={projects} />;
             })
             }
         </DragDropContext>
+        </Paper>
+        )
     };
 }
 

@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
-import { IProject } from '../data/Model';
+import { IProject } from '../../data/Model';
 
 interface IData {
     project: IProject;
     index:any;
 }
-class Project extends Component<IData> {
+class ProjectBoardElement extends Component<IData> {
     render() {
         return (
             <Draggable draggableId={this.props.project._id} index={this.props.index}>
@@ -25,4 +25,4 @@ class Project extends Component<IData> {
 }
 
 
-export default Project;
+export default ProjectBoardElement;

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Droppable } from 'react-beautiful-dnd';
-import Project from './Project';
-import { IPrize, IProject } from '../data/Model';
+import ProjectBoardElement from './ProjectBoardElement';
+import { IPrize, IProject } from '../../data/Model';
 
 interface IData {
     prize: IPrize;
@@ -9,7 +9,7 @@ interface IData {
   }
 
 
-class Prize extends Component<IData> {
+class PrizeBoardElement extends Component<IData> {
     render() {
         return (
             <div>
@@ -20,7 +20,7 @@ class Prize extends Component<IData> {
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                     >
-                    {this.props.projects.map((project, index) => <Project key={project._id} project={project} index={index} />)}
+                    {this.props.projects.map((project, index) => <ProjectBoardElement key={project._id} project={project} index={index} />)}
                     {provided.placeholder}
                     </div>
                 )}
@@ -30,4 +30,4 @@ class Prize extends Component<IData> {
     };
 }
 
-export default Prize;
+export default PrizeBoardElement;
