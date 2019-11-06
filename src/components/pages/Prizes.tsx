@@ -9,12 +9,12 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import PeopleIcon from '@material-ui/icons/People';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import NotInterestedIcon from '@material-ui/icons/NotInterested';
-import CheckIcon from '@material-ui/icons/Check';
-import { IParticipant } from '../../data/Model';
-import { participantRepository, projectRepository } from '../../data/Repository';
-import ParticipantDialog from '../ParticipantDialog';
+import { IPrize } from '../../data/Model';
+import { prizeRepository, projectRepository } from '../../data/Repository';
+import PrizeDialog from '../ErrorDialog';
 import ErrorDialog from '../ErrorDialog';
+
+
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -40,23 +40,25 @@ const styles = (theme: Theme) =>
     },
   });
 
-interface IParticipantProps extends WithStyles<typeof styles> {
+
+interface IPrizeProps extends WithStyles<typeof styles> {
 }
 
-interface IParticipantState {
-  participants: IParticipant[];
+interface IPrizeState {
+  prizes: IPrize[];
   dialogOpen: boolean;
   dialogIsEdit: boolean;
-  dialogEditParticipant?: IParticipant;
+  dialogEditPrize?: IPrize;
   errorState: boolean;
 }
 
-class Participants extends Component<IParticipantProps, IParticipantState> {
-  constructor(props: IParticipantProps) {
+class Prizes extends Component<IPrizeProps, IPrizeState> {
+  constructor(props: IPrizeProps) {
     super(props);
+    console.log("FOO"+this.state.prizes);
 
     this.state = {
-      participants: [],
+      prizes: [],
       dialogOpen: false,
       dialogIsEdit: false,
       errorState: false
@@ -65,14 +67,15 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
 
   componentDidMount() {
     try {
-      participantRepository.getAll().then((result) => {
+      prizeRepository.getAll().then((result) => {
         this.setState({
-          participants: result
+          prizes: result
         });
       });
     } catch (e) {
       this.setState({ errorState: true });
     }
+    
   }
 
   addActionClick = () => {
@@ -85,45 +88,35 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
   editActionClick = (rowId: string, e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
 
-    let participant: IParticipant | undefined = this.state.participants.find((value) => { return value._id === rowId });
+    let prize: IPrize | undefined = this.state.prizes.find((value) => { return value._id === rowId });
 
-    if (!participant) {
+    if (!prize) {
       return;
     }
 
     this.setState({
       dialogOpen: true,
       dialogIsEdit: true,
-      dialogEditParticipant: participant
+      dialogEditPrize: prize
     });
   }
 
   deleteActionClick = (rowId: string, e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     try {
-      participantRepository.remove(rowId).then(() => {
+      prizeRepository.remove(rowId).then(() => {
         this.setState({
-          participants: this.state.participants.filter(p => p._id !== rowId)
+          prizes: this.state.prizes.filter(p => p._id !== rowId)
         });
-
-        projectRepository.getAll().then((projects) => {
-          projects.forEach(async (project) => {
-            if (project.participants.includes(rowId)) {
-              project.participants = project.participants.filter(p => p !== rowId);
-              await projectRepository.update(project);
-            }
-          })
-        });
-
       });
     } catch (e) {
       this.setState({ errorState: true });
     }
   }
 
-  handleParticipantAdded = (participant: IParticipant) => {
+  handlePrizeAdded = (prize: IPrize) => {
     try {
-      participantRepository.add(participant)
+      prizeRepository.add(prize)
         .then(() => {
           this.setState({ dialogOpen: false });
         });
@@ -132,21 +125,21 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
     }
     this.setState({
       dialogOpen: false,
-      participants: this.state.participants.concat(participant)
+      prizes: this.state.prizes.concat(prize)
     })
   }
 
-  handleParticipantUpdated = (participant: IParticipant) => {
-
+  handlePrizeUpdated = (prize: IPrize) => {
     try {
-      participantRepository.get(participant._id)
+      prizeRepository.get(prize._id)
         .then((p) => {
-          p.birthdate = participant.birthdate;
-          p.firstName = participant.firstName;
-          p.lastName = participant.lastName;
-          p.hasPassport = participant.hasPassport;
-
-          participantRepository.update(p)
+          p.title = prize.title;
+          p.capacity = prize.capacity;
+          p.minAge = prize.minAge;
+          p.maxAge = prize.maxAge;
+          p.location = prize.location;
+          
+          prizeRepository.update(p)
             .then(() => {
               this.setState({ dialogOpen: false });
             })
@@ -158,7 +151,7 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
 
     this.setState({
       dialogOpen: false,
-      participants: this.state.participants.map((item, i) => { return (item._id === participant._id) ? participant : item; })
+      prizes: this.state.prizes.map((item, i) => { return (item._id === prize._id) ? prize : item; })
     })
   }
 
@@ -203,30 +196,27 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
               <Hidden mdUp>
                 <TableCell>GUID</TableCell>
               </Hidden>
-              <TableCell>First Name</TableCell>
-              <TableCell>Last Name</TableCell>
-              <TableCell>Birthdate</TableCell>
-              <TableCell align="center">Passport?</TableCell>
+              <TableCell>Title</TableCell>
+              <TableCell>Capacity</TableCell>
+              <TableCell>minAge</TableCell>
+              <TableCell>maxAge</TableCell>
+              <TableCell>location</TableCell>
               <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {this.state.participants.map((row: IParticipant) => (
+            {this.state.prizes.map((row: IPrize) => (
               <TableRow key={row._id}>
                 <Hidden mdUp>
                   <TableCell component="th" scope="row">
                     {row._id}
                   </TableCell>
                 </Hidden>
-                <TableCell>{row.firstName}</TableCell>
-                <TableCell>{row.lastName}</TableCell>
-                <TableCell>{new Date(row.birthdate).toLocaleDateString("lu-LU")}</TableCell>
-                <TableCell align="center">
-                  {
-                    (row.hasPassport) ? <Icon><CheckIcon /></Icon> : <Icon><NotInterestedIcon /></Icon>
-                  }
-
-                </TableCell>
+                <TableCell>{row.title}</TableCell>
+                <TableCell>{row.capacity}</TableCell>
+                <TableCell>{row.minAge}</TableCell>
+                <TableCell>{row.maxAge}</TableCell>
+                <TableCell>{row.location}</TableCell>
                 <TableCell align="center">
                   <IconButton onClick={(e) => this.editActionClick(row._id, e)} className={this.props.classes.button} aria-label="edit" title="Edit">
                     <EditIcon />
@@ -240,11 +230,12 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
           </TableBody>
         </Table>
       </div>
-      <ParticipantDialog open={this.state.dialogOpen} editMode={this.state.dialogIsEdit} editParticipant={this.state.dialogEditParticipant} onAdded={this.handleParticipantAdded} onUpdated={this.handleParticipantUpdated} onClosed={this.handleDialogClosed} />
+      
       <ErrorDialog open={this.state.errorState} text={"You need to reload the page."} />
     </Paper>
     )
   };
+
 }
 
-export default withStyles(styles)(Participants);
+export default withStyles(styles)(Prizes);

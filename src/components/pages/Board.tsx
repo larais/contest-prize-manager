@@ -1,26 +1,53 @@
 import React, { Component } from 'react';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
+import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
 import Prize from '../Prize';
 import { IPrize, IProject } from '../../data/Model';
 import { prizeRepository } from '../../data/Repository';
 
-interface IState {
+
+const styles = (theme: Theme) =>
+  createStyles({
+    paper: {
+      maxWidth: 936,
+      margin: 'auto',
+      overflow: 'hidden',
+    },
+    titleBar: {
+      borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+    },
+    block: {
+      display: 'block',
+    },
+    addUser: {
+      marginRight: theme.spacing(1),
+    },
+    contentWrapper: {
+      margin: '40px 16px',
+    },
+    button: {
+      margin: theme.spacing(1),
+    },
+  });
+
+interface IBoardState {
     prizes: { [id: string]: IPrize };
     projects: { [id: string]: IProject };
     prizesOrder: string[];
 }
 
-interface IProps {
-
+interface IBoardProps  extends WithStyles<typeof styles> {
 }
 
-class Board extends Component<{}, IState> {
+class Board extends Component<IBoardProps, IBoardState> {
 
-    constructor(props: IProps) {
+    constructor(props: IBoardProps) {
         super(props);
 
         this.state = {
-            prizes: {}, prizesOrder: [], projects: {}
+            prizes: {},
+            prizesOrder: [],
+            projects: {}
         }
     }
 
@@ -43,54 +70,34 @@ class Board extends Component<{}, IState> {
                 projects: { "project-1": { _id: "project-1", title: "Project A", description: 'desc', participants: [] } }
             });
         });
-
-        let prize = {
-            _id: '',
-            title: "test",
-            capacity: 3,
-            location: "Helloo",
-            minAge: 2,
-            maxAge: 3,
-            projects: []
-        } as IPrize;
-
-        prizeRepository.add(prize)
-            .then(() => {
-                console.log(prize);
-
-                prize.title = "updated title";
-
-                prizeRepository.update(prize)
-                    .then(() => {
-                        console.log(prize);
-
-                        prizeRepository.remove(prize._id)
-                            .then(() => {
-                                prizeRepository.get(prize._id)
-                                    .then((p) => {
-                                        console.log(p);
-                                    })
-                                    .catch((e) => {
-                                        console.log('error, lele');
-                                    });
-                            });
-
-                    });
-                    
-            });
     }
 
     onDragStart() {
         //TODO:
+        console.log("HELLO, onDragStart");
     }
     onDragUpdate() {
         //TODO:
+        console.log("HELLO, onDragUpdate");
     }
     onDragEnd(result: DropResult) {
         //TODO:
+        console.log("HELLO, onDragEnd");
+        if (!result.destination) {
+            //Dragged outside of the lists
+            return;
+        }
+
+        if (result.destination.index === result.source.index) {
+            //Only changed order, element still in the same prize container
+            return;
+        }
+
+        //this.setState();
     }
 
     render() {
+        console.log("HELLO, render");
         return <DragDropContext
             onDragStart={this.onDragStart}
             onDragUpdate={this.onDragUpdate}
@@ -114,4 +121,4 @@ class Board extends Component<{}, IState> {
 }
 
 
-export default Board;
+export default withStyles(styles)(Board);

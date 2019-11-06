@@ -221,7 +221,7 @@ class Projects extends Component<IPprojectProps, IProjectState> {
                 </Table>
             </div>
             <ProjectDialog open={this.state.dialogOpen} editMode={this.state.dialogIsEdit} editProject={this.state.dialogEditProject} onAdded={this.handleProjectAdded} onUpdated={this.handleProjectUpdated} onClosed={this.handleDialogClosed} />
-            <ErrorDialog open={this.state.errorState} text={"You need to reaload the page."} />
+            <ErrorDialog open={this.state.errorState} text={"You need to reload the page."} />
         </Paper>
         )
     };
