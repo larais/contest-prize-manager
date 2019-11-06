@@ -4,14 +4,14 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
-import { TableCell, TableRow, TableHead, Table, TableBody, Grid, Button, Tooltip, IconButton, Hidden, Icon } from '@material-ui/core';
+import { TableCell, TableRow, TableHead, Table, TableBody, Grid, Button, Tooltip, IconButton, Hidden } from '@material-ui/core';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import PeopleIcon from '@material-ui/icons/People';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { IPrize } from '../../data/Model';
 import { prizeRepository } from '../../data/Repository';
-import PrizeDialog from '../ErrorDialog';
+import PrizeDialog from '../PrizeDialog';
 import ErrorDialog from '../ErrorDialog';
 
 const styles = (theme: Theme) =>
@@ -53,7 +53,7 @@ interface IPrizeState {
 class Prizes extends Component<IPrizeProps, IPrizeState> {
   constructor(props: IPrizeProps) {
     super(props);
-    
+
     this.state = {
       prizes: [],
       dialogOpen: false,
@@ -226,7 +226,7 @@ class Prizes extends Component<IPrizeProps, IPrizeState> {
           </TableBody>
         </Table>
       </div>
-
+     <PrizeDialog open={this.state.dialogOpen} editMode={this.state.dialogIsEdit} editPrize={this.state.dialogEditPrize} onAdded={this.handlePrizeAdded} onUpdated={this.handlePrizeUpdated} onClosed={this.handleDialogClosed} />
       <ErrorDialog open={this.state.errorState} text={"You need to reload the page."} />
     </Paper>
     )

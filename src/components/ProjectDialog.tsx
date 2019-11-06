@@ -95,7 +95,6 @@ class ProjectDialog extends Component<IProjectDialogProps, IProjectDialogState> 
     }
 
     handleSave = () => {
-
         this.setState({ loading: true });
 
         if (this.checkInputInvalid()) {
