@@ -123,18 +123,18 @@ class ParticipantDialog extends Component<IParticipantDialogProps, IParticipantD
           <FormGroup>
             <FormControl>
               <InputLabel htmlFor="firstname">First Name</InputLabel>
-              <Input id="firstname" autoFocus defaultValue={this.state.dialogFirstName} onChange={(e) => this.setState({ dialogFirstName: e.target.value })} error={this.state.firstNameError} />
+              <Input id="firstname" autoFocus value={this.state.dialogFirstName} onChange={(e) => this.setState({ dialogFirstName: e.target.value })} error={this.state.firstNameError} />
             </FormControl>
             <FormControl>
               <InputLabel htmlFor="lastname">Last Name</InputLabel>
-              <Input id="lastname" defaultValue={this.state.dialogLastName} onChange={(e) => this.setState({ dialogLastName: e.target.value })} error={this.state.lastNameError} />
+              <Input id="lastname" value={this.state.dialogLastName} onChange={(e) => this.setState({ dialogLastName: e.target.value })} error={this.state.lastNameError} />
             </FormControl>
             <FormControl>
               <InputLabel htmlFor="birthdate" shrink>Birthday</InputLabel>
-              <Input id="birthdate" type="date" defaultValue={this.state.dialogBirthdate.toISOString().substr(0, 10)} onChange={(e) => this.setState({ dialogBirthdate: new Date(e.target.value) })} />
+              <Input id="birthdate" type="date" value={this.state.dialogBirthdate.toISOString().substr(0, 10)} onChange={(e) => this.setState({ dialogBirthdate: new Date(e.target.value) })} />
             </FormControl>
             <FormControlLabel
-              control={<Checkbox value="jason" defaultChecked={this.state.dialogHasPassport} onChange={(e) => this.setState({ dialogHasPassport: e.target.checked })} />}
+              control={<Checkbox checked={this.state.dialogHasPassport} onChange={(e) => this.setState({ dialogHasPassport: e.target.checked })} />}
               label="Passport available"
             />
           </FormGroup>
@@ -142,10 +142,10 @@ class ParticipantDialog extends Component<IParticipantDialogProps, IParticipantD
         <DialogActions>
           <Button onClick={this.handleClose} color="primary" disabled={this.state.loading}>
             Cancel
-                  </Button>
+          </Button>
           <Button onClick={this.handleSave} color="primary" disabled={this.state.loading}>
             Save
-                  </Button>
+          </Button>
         </DialogActions>
       </Dialog>
     );
