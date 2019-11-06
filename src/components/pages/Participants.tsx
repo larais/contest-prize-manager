@@ -13,8 +13,8 @@ import NotInterestedIcon from '@material-ui/icons/NotInterested';
 import CheckIcon from '@material-ui/icons/Check';
 import { IParticipant } from '../../data/Model';
 import { participantRepository, projectRepository } from '../../data/Repository';
-import ParticipantDialog from '../ParticipantDialog';
-import ErrorDialog from '../ErrorDialog';
+import ParticipantDialog from '../dialogs/ParticipantDialog';
+import ErrorDialog from '../dialogs/ErrorDialog';
 
 const styles = (theme: Theme) =>
   createStyles({

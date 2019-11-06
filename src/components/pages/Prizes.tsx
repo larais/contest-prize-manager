@@ -11,8 +11,8 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { IPrize } from '../../data/Model';
 import { prizeRepository } from '../../data/Repository';
-import PrizeDialog from '../PrizeDialog';
-import ErrorDialog from '../ErrorDialog';
+import PrizeDialog from '../dialogs/PrizeDialog';
+import ErrorDialog from '../dialogs/ErrorDialog';
 
 const styles = (theme: Theme) =>
   createStyles({

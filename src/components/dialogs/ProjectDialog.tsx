@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Button, FormGroup, TextField } from '@material-ui/core';
-import { IParticipant, IProject } from '../data/Model';
+import { IParticipant, IProject } from '../../data/Model';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -9,7 +9,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { participantRepository } from "../data/Repository";
+import { participantRepository } from "../../data/Repository";
 
 interface IProjectDialogProps {
     editMode: boolean;

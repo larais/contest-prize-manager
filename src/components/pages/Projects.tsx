@@ -11,8 +11,8 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { IProject } from '../../data/Model';
 import { projectRepository } from '../../data/Repository';
-import ErrorDialog from '../ErrorDialog';
-import ProjectDialog from '../ProjectDialog';
+import ErrorDialog from '../dialogs/ErrorDialog';
+import ProjectDialog from '../dialogs/ProjectDialog';
 
 const styles = (theme: Theme) =>
     createStyles({

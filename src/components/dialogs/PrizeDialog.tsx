@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Button, FormGroup, Slider } from '@material-ui/core';
-import { IPrize, IProject } from '../data/Model';
+import { IPrize, IProject } from '../../data/Model';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
