@@ -76,6 +76,7 @@ class ProjectDialog extends Component<IProjectDialogProps, IProjectDialogState> 
                     } else if (!this.props.editMode) {
                         this.setState({
                             loading: false,
+                            allParticipants: result,
                             dialogTitle: "",
                             dialogDescription: "",
                             dialogParticipants: [],
