@@ -1,18 +1,17 @@
 import React, { Component } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
 import { TableCell, TableRow, TableHead, Table, TableBody, Grid, Button, Tooltip, IconButton, Hidden } from '@material-ui/core';
 import RefreshIcon from '@material-ui/icons/Refresh';
-import PeopleIcon from '@material-ui/icons/People';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { IProject } from '../../data/Model';
 import { projectRepository } from '../../data/Repository';
 import ErrorDialog from '../dialogs/ErrorDialog';
 import ProjectDialog from '../dialogs/ProjectDialog';
+import AssignmentIcon from '@material-ui/icons/AssignmentOutlined';
 
 const styles = (theme: Theme) =>
     createStyles({
@@ -163,17 +162,14 @@ class Projects extends Component<IPprojectProps, IProjectState> {
                 <Toolbar>
                     <Grid container spacing={2} alignItems="center">
                         <Grid item>
-                            <PeopleIcon className={this.props.classes.block} color="inherit" />
+                            <AssignmentIcon className={this.props.classes.block} color="inherit" />
                         </Grid>
                         <Grid item xs>
-                            <Typography variant="h6">
-                                Projects
-                    </Typography>
                         </Grid>
                         <Grid item>
                             <Button variant="contained" color="primary" className={this.props.classes.addUser} onClick={this.addActionClick}>
                                 Add project
-                      </Button>
+                            </Button>
                             <Tooltip title="Reload">
                                 <IconButton>
                                     <RefreshIcon className={this.props.classes.block} color="inherit" />

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, FormGroup, Slider } from '@material-ui/core';
+import { Button, FormGroup, Slider, Typography } from '@material-ui/core';
 import { IPrize, IProject } from '../../data/Model';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -140,13 +140,19 @@ class PrizeDialog extends Component<IPrizeDialogProps, IPrizeDialogState> {
                         <Input id="capacity" value={this.state.dialogCapacity} onChange={(e) => this.setState({ dialogCapacity: parseInt(e.target.value) })} />
                     </FormControl>
                     <FormControl>
-                        <InputLabel htmlFor="min-max-age">Age Range</InputLabel>
+                        <Typography id="range-slider" gutterBottom>
+                          Age range
+                        </Typography>
                         <Slider
                             id="min-max-age"
                             value={[this.state.dialogMinAge, this.state.dialogMaxAge]}
-                            valueLabelDisplay="on"
-                            aria-labelledby="range-slider-always"
-                            onChange={(e) => console.log(e)}
+                            valueLabelDisplay="auto"
+                            onChange={(e, newValue) => {
+                              let v = newValue as number[];
+
+                              this.setState({ dialogMinAge: v[0], dialogMaxAge: v[1] }); 
+                            }
+                          }
                         />
                     </FormControl>
                 </FormGroup>

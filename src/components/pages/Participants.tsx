@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
 import { TableCell, TableRow, TableHead, Table, TableBody, Grid, Button, Tooltip, IconButton, Hidden, Icon } from '@material-ui/core';
@@ -179,14 +178,11 @@ class Participants extends Component<IParticipantProps, IParticipantState> {
               <PeopleIcon className={this.props.classes.block} color="inherit" />
             </Grid>
             <Grid item xs>
-              <Typography variant="h6">
-                Participants
-                    </Typography>
             </Grid>
             <Grid item>
               <Button variant="contained" color="primary" className={this.props.classes.addUser} onClick={this.addActionClick}>
                 Add participant
-                      </Button>
+              </Button>
               <Tooltip title="Reload">
                 <IconButton>
                   <RefreshIcon className={this.props.classes.block} color="inherit" />

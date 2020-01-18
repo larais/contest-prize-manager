@@ -4,8 +4,7 @@ import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/s
 import PrizeBoardElement from '../board_elements/PrizeBoardElement';
 import { IPrize, IProject } from '../../data/Model';
 import { prizeRepository, projectRepository } from '../../data/Repository';
-import { Paper, Grid, Typography, AppBar, Toolbar } from '@material-ui/core';
-import CompareArrowIcon from '@material-ui/icons/CompareArrowsOutlined';
+import { Paper } from '@material-ui/core';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -148,17 +147,19 @@ class Board extends Component<IBoardProps, IBoardState> {
             let sourcePrizeId = result.source.droppableId;
             let targetPrizeId = result.destination.droppableId;
 
-            this.moveDraggable(state, projectId, sourcePrizeId, targetPrizeId);
+            this.moveDraggable(state, projectId, sourcePrizeId, targetPrizeId, result.destination.index);
             this.updatePrizes([sourcePrizeId, targetPrizeId]);
             this.setState(state);
         }
     }
 
-    moveDraggable = (state: IBoardState, projectId: string, fromPrize: string, toPrize: string): void => {
+    moveDraggable = (state: IBoardState, projectId: string, fromPrize: string, toPrize: string, index: number): void => {
         state.prizeProjects[fromPrize] = state.prizeProjects[fromPrize].filter(p => p._id !== projectId);
         state.prizes[fromPrize].projects = state.prizes[fromPrize].projects.filter(p => p !== projectId);
-        state.prizeProjects[toPrize].push(state.projects[projectId]);
-        state.prizes[toPrize].projects.push(projectId);
+
+
+        state.prizeProjects[toPrize].splice(index, 0, state.projects[projectId]);
+        state.prizes[toPrize].projects.splice(index, 0, projectId);
     }
 
     updatePrizes = async (prizeIds: string[]) => {
@@ -187,21 +188,6 @@ class Board extends Component<IBoardProps, IBoardState> {
     render() {
         return (
         <Paper className={this.props.classes.paper}>
-            <AppBar className={this.props.classes.titleBar} position="static" color="default" elevation={0}>
-                <Toolbar>
-                <Grid container spacing={2} alignItems="center">
-                    <Grid item>
-                    <CompareArrowIcon className={this.props.classes.block} color="inherit" />
-                    </Grid>
-                    <Grid item xs>
-                    <Typography variant="h6">
-                        Board
-                    </Typography>
-                    </Grid>
-                </Grid>
-                </Toolbar>
-            </AppBar>
-
         <DragDropContext
             onDragStart={this.onDragStart}
             onDragUpdate={this.onDragUpdate}

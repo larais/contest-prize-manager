@@ -49,7 +49,7 @@ let theme = createMuiTheme({
     },
   },
   shape: {
-    borderRadius: 8,
+    borderRadius: 0,
   },
   props: {
     MuiTab: {
