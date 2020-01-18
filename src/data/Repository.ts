@@ -11,13 +11,13 @@ export class Repository<TDocument extends IDocument> {
 
     async getAll(): Promise<TDocument[]> {
         let result = await this.db.allDocs({ include_docs: true});
-        let prizes: TDocument[] = [];
+        let entity: TDocument[] = [];
 
         result.rows.forEach(element => {
-            prizes.push(element.doc as TDocument);
+            entity.push(element.doc as TDocument);
         });
 
-        return prizes;
+        return entity;
     }
 
     async get(_id: string): Promise<TDocument> {         
@@ -25,15 +25,15 @@ export class Repository<TDocument extends IDocument> {
         return result;
     }
 
-    async add(prize: TDocument): Promise<void> {
-        prize._id = uuid.v4();
-        let result = await this.db.put(prize)
-        prize._rev = result.rev;   
+    async add(entity: TDocument): Promise<void> {
+        entity._id = uuid.v4();
+        let result = await this.db.put(entity)
+        entity._rev = result.rev;   
     }
 
-    async update(prize: TDocument): Promise<void> {
-        let result = await this.db.put(prize)
-        prize._rev = result.rev;  
+    async update(entity: TDocument): Promise<void> {
+        let result = await this.db.put(entity)
+        entity._rev = result.rev;  
     }
 
     async remove(_id: string): Promise<void> {
