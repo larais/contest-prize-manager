@@ -7,7 +7,6 @@ import { prizeRepository, projectRepository } from '../../data/Repository';
 import { Paper, Grid, Typography, AppBar, Toolbar } from '@material-ui/core';
 import CompareArrowIcon from '@material-ui/icons/CompareArrowsOutlined';
 
-
 const styles = (theme: Theme) =>
   createStyles({
     paper: {
@@ -33,13 +32,15 @@ interface IBoardState {
     prizes: { [id: string]: IPrize };
     prizeProjects: { [id: string]: IProject[] };
     prizesOrder: string[];
-    i: number;
+    projects: { [id: string]: IProject };
 }
 
-interface IBoardProps  extends WithStyles<typeof styles> {
+interface IBoardProps extends WithStyles<typeof styles> {
 }
 
 class Board extends Component<IBoardProps, IBoardState> {
+
+    private static notAttributedDroppableId: string = "not-attributed";
 
     constructor(props: IBoardProps) {
         super(props);
@@ -48,13 +49,11 @@ class Board extends Component<IBoardProps, IBoardState> {
             prizes: {},
             prizesOrder: [],
             prizeProjects: {},
-            i: 1
+            projects: {}
         }
     }
 
     componentDidMount() {
-        console.log("hello mount");
-
         this.loadBoardData();
     }
 
@@ -72,9 +71,12 @@ class Board extends Component<IBoardProps, IBoardState> {
             });
 
             projectRepository.getAll().then(projects => {
+                let allProjectsKV: { [pid: string]: IProject } = {};
+
                 let projectsKV: { [pid: string]: IProject } = {};
                 projects.forEach((p) => {
                     projectsKV[p._id] = p;
+                    allProjectsKV[p._id] = p;
                 });
 
 
@@ -90,8 +92,8 @@ class Board extends Component<IBoardProps, IBoardState> {
                 });
 
                 let naPrize: IPrize = {
-                    _id: "na",
-                    title: "Not attributed",
+                    _id: Board.notAttributedDroppableId,
+                    title: "Not Attributed",
                     capacity: -1,
                     minAge: 0,
                     maxAge: 0,
@@ -116,95 +118,73 @@ class Board extends Component<IBoardProps, IBoardState> {
                 this.setState({
                     prizes: prizesKV,
                     prizesOrder: prizeOrder,
-                    prizeProjects: prizeProjects
+                    prizeProjects: prizeProjects,
+                    projects: allProjectsKV
                 });
             });
         });
     }
 
     onDragStart() {
-        //TODO:
-        console.log("HELLO, onDragStart");
     }
+
     onDragUpdate() {
-        //TODO:
-        console.log("HELLO, onDragUpdate");
     }
+
     onDragEnd(result: DropResult) {
-        //TODO:
-        console.log("HELLO, onDragEnd");
-        console.log(result);
 
         if (!result.destination) {
-            //Dragged outside of the lists
-            
-            //TODO: save order: result.source.index ...
             return;
         }
 
-        //TODO: update state first :/
-
-
-        console.log("h");
-        let projectId = result.draggableId;
-        console.log(this);
+        let state: IBoardState = {
+            prizes: this.state.prizes,
+            prizesOrder: this.state.prizesOrder,
+            prizeProjects: this.state.prizeProjects,
+            projects: this.state.projects
+        };
         if (result.destination) {
-            let newPrizeId = result.destination.droppableId;
-            console.log("h");
-            if (result.source.droppableId === "na") {
-                prizeRepository.get(newPrizeId)
-                    .then(newPrize => {
-                        newPrize.projects.push(projectId);
-                        prizeRepository.update(newPrize);
+            let projectId = result.draggableId;
+            let sourcePrizeId = result.source.droppableId;
+            let targetPrizeId = result.destination.droppableId;
 
-                        /*this.state.prizeProjects["na"] = this.state.prizeProjects["na"].filter(p => p._id !== projectId);
-                        this.state.prizes["na"].projects = this.state.prizes["na"].projects.filter(p => p !== projectId);
-
-                        this.state.prizeProjects[newPrizeId].push(this.state.)
-
-                        this.setState({
-                            prizeProjects: this.state.prizeProjects
-                        })*/
-                        
-                        this.loadBoardData();
-                        console.log("all done h");
-                });
-            } else {
-                prizeRepository.get(result.source.droppableId)
-                .then(oldPrize => {
-                    console.log("a");
-                    oldPrize.projects = oldPrize.projects.filter(pid => pid !== projectId);
-                    prizeRepository.update(oldPrize)
-                        .then(() => {
-                            console.log("a");
-                            if (newPrizeId === "na") {
-                                this.loadBoardData();
-                                return;
-                            }
-
-                            prizeRepository.get(newPrizeId)
-                                .then(newPrize => {
-                                    newPrize.projects.push(projectId);
-                                    prizeRepository.update(newPrize)
-                                        .catch(error => {
-                                            //...
-                                        })
-                                    console.log("all done a");
-                                    this.loadBoardData();
-                                })
-                                .catch(error => {
-                                    console.log(error);
-                                });
-                        })
-                });
-            }
+            this.moveDraggable(state, projectId, sourcePrizeId, targetPrizeId);
+            this.updatePrizes([sourcePrizeId, targetPrizeId]);
+            this.setState(state);
         }
+    }
 
-        //this.setState();
+    moveDraggable = (state: IBoardState, projectId: string, fromPrize: string, toPrize: string): void => {
+        state.prizeProjects[fromPrize] = state.prizeProjects[fromPrize].filter(p => p._id !== projectId);
+        state.prizes[fromPrize].projects = state.prizes[fromPrize].projects.filter(p => p !== projectId);
+        state.prizeProjects[toPrize].push(state.projects[projectId]);
+        state.prizes[toPrize].projects.push(projectId);
+    }
+
+    updatePrizes = async (prizeIds: string[]) => {
+
+        for (let index = 0; index < prizeIds.length; index++) {
+            const prizeId = prizeIds[index];
+
+            if (prizeId === Board.notAttributedDroppableId) {
+                continue;
+            }
+
+            await prizeRepository.get(prizeId)
+                .then(prize => {
+                    prize.projects = this.state.prizes[prizeId].projects;
+                    prizeRepository.update(prize)
+                            .catch(error => {
+                                console.log(error);
+                            })
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        }
     }
 
     render() {
-        console.log("HELLO, render");
         return (
         <Paper className={this.props.classes.paper}>
             <AppBar className={this.props.classes.titleBar} position="static" color="default" elevation={0}>

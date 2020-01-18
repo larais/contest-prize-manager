@@ -12,7 +12,14 @@ const styles = (theme: Theme) =>
         alignItems: "start",
         minWidth: 600,
         minHeight: 60,
-        border: "1px solid gray"
+        backgroundColor: "rgb(235, 236, 240)",
+        padding: 5
+    },
+    prizeList: {
+        backgroundColor: "rgb(217, 217, 218)"
+    },
+    title: {
+        paddingLeft: 10
     }
 });
 
@@ -24,19 +31,19 @@ interface IPrizeBoardElementProps extends WithStyles<typeof styles> {
 class PrizeBoardElement extends Component<IPrizeBoardElementProps> {
     render() {
         return (
-            <div>
-                <h2>{this.props.prize.title}</h2>
-                <Droppable droppableId={this.props.prize._id}>
-                {(provided) => (
-                    <div
-                        ref={provided.innerRef}
-                        className={this.props.classes.droppable}
-                        {...provided.droppableProps}
-                    >
-                    {this.props.projects.map((project, index) => <ProjectBoardElement key={project._id} project={project} index={index} />)}
-                    {provided.placeholder}
-                    </div>
-                )}
+            <div className={this.props.classes.prizeList}>
+                <h2 className={this.props.classes.title}>{this.props.prize.title}</h2>
+                <Droppable droppableId={this.props.prize._id} direction="horizontal">
+                    {(provided) => (
+                        <div
+                            ref={provided.innerRef}
+                            className={this.props.classes.droppable}
+                            {...provided.droppableProps}
+                        >
+                        {this.props.projects.map((project, index) => <ProjectBoardElement key={project._id} project={project} index={index} />)}
+                        {provided.placeholder}
+                        </div>
+                    )}
                 </Droppable>
             </div>
         )
